@@ -23,41 +23,46 @@ import sqlalchemy as sql
 
 class Data_Fetcher:
     def __init__(self, url, db_name, table_name):
+        self.df = None
         self.url = url
         self.db_name = db_name
         self.table_name = table_name
 
     def reader(self):
-        df = pd.read_csv(self.url, delimiter=';') \
-               .drop(columns='Status', errors='ignore') \
-               .loc[lambda x: x['Verkehr'].isin(["FV", "RV", "nur DPN"])] \
-               .loc[lambda x: x['IFOPT'].str.match(r'^.{2}:\d+:\d+(?::\d+)?$').fillna(False)]
+        self.df = pd.read_csv(self.url, delimiter=';') \
+                    .drop(columns='Status', errors='ignore') 
         
-        df['Laenge'] = pd.to_numeric(df['Laenge'].str.replace(',', '.'), errors='coerce')
-        df['Breite'] = pd.to_numeric(df['Breite'].str.replace(',', '.'), errors='coerce')
-        df = df[df['Laenge'].between(-90, 90) & df['Breite'].between(-90, 90)]
+        if self.df is not None:
+            self.df.dropna(subset=self.df.columns.to_list(), inplace=True) 
+            self.df = self.df.loc[self.df['IFOPT'].str.match(r'^.{2}:\d+:\d+(?::\d+)?$').fillna(False)]
 
-        Database_Connection = sql.create_engine(f"sqlite:///{self.db_name}.sqlite", echo=False)
+            self.df['Laenge'] = pd.to_numeric(self.df['Laenge'].str.replace(',', '.'), errors='coerce')
+            self.df['Breite'] = pd.to_numeric(self.df['Breite'].str.replace(',', '.'), errors='coerce')
 
-        dtype_mapping = {
-            'NAME': sql.types.TEXT,
-            'Verkehr': sql.types.TEXT,
-            'IFOPT': sql.types.TEXT,
-            'Laenge': sql.types.FLOAT,
-            'Breite': sql.types.FLOAT,
-            'DS100': sql.types.TEXT,
-            'Betreiber_Name': sql.types.TEXT,
-            'Betreiber_Nr': sql.types.BIGINT,
-            'EVA_NR': sql.types.BIGINT,
-        }
+            self.df = self.df[self.df['Laenge'].between(-90, 90) & self.df['Breite'].between(-90, 90)]
+            
 
-        df.to_sql(self.table_name, con=Database_Connection, if_exists="replace", index=False, dtype=dtype_mapping)
-        return df.copy()
+            Database_Connection = sql.create_engine(f"sqlite:///{self.db_name}.sqlite", echo=False)
+
+            datatype_convertor = {
+                'NAME': sql.types.TEXT,
+                'Verkehr': sql.types.TEXT,
+                'IFOPT': sql.types.TEXT,
+                'Laenge': sql.types.FLOAT,
+                'Breite': sql.types.FLOAT,
+                'DS100': sql.types.TEXT,
+                'Betreiber_Name': sql.types.TEXT,
+                'Betreiber_Nr': sql.types.BIGINT,
+                'EVA_NR': sql.types.BIGINT,
+            }
+
+            self.df.to_sql(self.table_name, con=Database_Connection, if_exists="replace", index=False, dtype=datatype_convertor)
+        return self.df.copy()
 
 if __name__ == '__main__':
     db_url = "https://download-data.deutschebahn.com/static/datasets/haltestellen/D_Bahnhof_2020_alle.CSV"
     db_name = 'trainstops'
     table_name = 'trainstops'
 
-    pp = Data_Fetcher(db_url, db_name, table_name)
-    df = pp.reader()
+    Fetch_data = Data_Fetcher(db_url, db_name, table_name)
+    df = Fetch_data.reader()
