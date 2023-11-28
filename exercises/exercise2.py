@@ -34,6 +34,7 @@ class Data_Fetcher:
         
         if self.df is not None:
             self.df.dropna(subset=self.df.columns.to_list(), inplace=True) 
+            self.df = self.df.loc[self.df['Verkehr'].isin(["FV", "RV", "nur DPN"])]     
             self.df = self.df.loc[self.df['IFOPT'].str.match(r'^.{2}:\d+:\d+(?::\d+)?$').fillna(False)]
 
             self.df['Laenge'] = pd.to_numeric(self.df['Laenge'].str.replace(',', '.'), errors='coerce')
