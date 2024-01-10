@@ -20,7 +20,7 @@ jobs:
     
     - name: Installing the dependencies
       run: |
-        pip install os zipfile36 scikit-learn sqlalchemy pandas numpy pysqlite3 matplotlib 
+        pip install zipfile36 scikit-learn sqlalchemy pandas numpy pysqlite3 matplotlib 
     
     - name: Install Linting and Type Checking Tools
       run: |
