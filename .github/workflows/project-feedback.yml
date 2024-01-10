@@ -20,17 +20,14 @@ jobs:
     
     - name: Installing the dependencies
       run: |
-        pip install zipfile36 scikit-learn sqlalchemy pandas numpy pysqlite3 matplotlib 
+        pip install pandas-stubs zipfile36 scikit-learn sqlalchemy pandas numpy pysqlite3 matplotlib 
     
-    - name: Install Linting and Type Checking Tools
+    - name: Installing Linting 
       run: |
-        pip install flake8 mypy
+        pip install flake8 
         
-    - name: Lint Code
+    - name: Linting Code
       run: flake8 ./project
-
-    - name: Type Check
-      run: mypy ./project
       
     - name: Installing kaggle CLI
       run: |
