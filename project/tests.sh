@@ -1,5 +1,5 @@
 
-python project_test.py
+python project/project_test.py
 
 # Checking if the test run was successful or not.
 if [ $? -eq 0 ]; then
