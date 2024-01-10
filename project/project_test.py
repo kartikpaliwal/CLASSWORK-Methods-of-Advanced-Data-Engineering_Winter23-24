@@ -39,7 +39,7 @@ def test_integrity(csv_file_path):
 
 def run_tests():
     competition_name = 'g-research-crypto-forecasting'
-    dataset_dir = os.path.join('/home/kryp/Documents/uni work/Advanced data engineering/github assignments/CLASSWORK-Methods-of-Advanced-Data-Engineering_Winter23-24/', 'data/')  # noqa
+    dataset_dir = os.path.join('/', 'data/')  # noqa
     db_path = os.path.join(dataset_dir, 'data.db')
     csv_file_path = os.path.join(dataset_dir, 'train.csv')
 
