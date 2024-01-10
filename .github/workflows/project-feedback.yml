@@ -1,0 +1,51 @@
+name: Runing project tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setting Up Python 
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+    
+    - name: Installing the dependencies
+      run: |
+        pip install os zipfile36 scikit-learn sqlalchemy pandas numpy pysqlite3 matplotlib 
+    
+    - name: Install Linting and Type Checking Tools
+      run: |
+        pip install flake8 mypy
+        
+    - name: Lint Code
+      run: flake8 ./project
+
+    - name: Type Check
+      run: mypy ./project
+      
+    - name: Installing kaggle CLI
+      run: |
+        pip install kaggle
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Setting up the Kaggle API
+      run: |
+        mkdir -p $HOME/.kaggle
+        echo "{\"username\":\"${{ secrets.KAGGLE_USER }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > $HOME/.kaggle/kaggle.json
+        chmod 600 $HOME/.kaggle/kaggle.json
+     
+    - name: Runing tests
+      run: |
+        chmod +x project/test.sh
+        ./project/test.sh
+    
+        
