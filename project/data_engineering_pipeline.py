@@ -79,7 +79,7 @@ def process_csv_files(dataset_dir, db_path):
 
 def main():
     competition_name = 'g-research-crypto-forecasting'
-    dataset_dir = ('data/')  
+    dataset_dir = ('data/')
     db_path = os.path.join(dataset_dir, 'data.db')
 
     print("Task 0: Setting up the directories for everything")
